@@ -1,8 +1,9 @@
 package eu.telecomnancy.sensor;
 
+import java.util.Observable;
 import java.util.Random;
 
-public class TemperatureSensor implements ISensor {
+public class TemperatureSensor extends Observable implements ISensor {
     boolean state;
     double value = 0;
 
@@ -23,16 +24,23 @@ public class TemperatureSensor implements ISensor {
 
     @Override
     public void update() throws SensorNotActivatedException {
-        if (state)
+        if (state) {
             value = (new Random()).nextDouble() * 100;
-        else throw new SensorNotActivatedException("Sensor must be activated before acquiring new values.");
+            setChanged();
+            notifyObservers();
+        } else {
+            throw new SensorNotActivatedException(
+                    "Sensor must be activated before acquiring new values.");
+        }
     }
 
     @Override
     public double getValue() throws SensorNotActivatedException {
         if (state)
             return value;
-        else throw new SensorNotActivatedException("Sensor must be activated to get its value.");
+        else
+            throw new SensorNotActivatedException(
+                    "Sensor must be activated to get its value.");
     }
 
 }
